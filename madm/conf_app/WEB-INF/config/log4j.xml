@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration name="Morpheus" status="INFO" monitorInterval="60">
+    <!-- Properties -->
+    <Properties>
+        <Property name="LOG_DIR">./logs</Property>
+        <Property name="LOG_APPENDER">console</Property>
+        <Property name="LOG_STORE_DAY">30d</Property>
+    </Properties>
+
+    <!-- Appenders -->
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{MM/dd HH:mm:ss}, %-5p (%C{3}) : %m%n"/>
+        </Console>
+        <RollingFile name="file" fileName="${LOG_DIR}/msp_stdout.log" filePattern="${LOG_DIR}/msp_stdout.log.%d{yyyy-MM-dd}">
+            <PatternLayout>
+                <pattern>%d{MM/dd HH:mm:ss}, %-5p (%C{3}) : %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${LOG_DIR}" maxDepth="1">
+                    <IfFileName glob="msp_stdout.log.????-??-??">
+                        <IfLastModified age="${LOG_STORE_DAY}"/>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+        <RollingFile name="EVENTLOG" fileName="${LOG_DIR}/event/msp_event.log" filePattern="${LOG_DIR}/msp_event.log.%d{yyyy-MM-dd}" append="true">
+            <ThresholdFilter level="info"/>
+            <PatternLayout>
+                <pattern>%d{MM/dd HH:mm:ss}, %-5p : %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <!-- Application Loggers -->
+    <Loggers>
+        <Logger name="kr.msp" level="debug" additivity="false">
+            <AppenderRef ref="${LOG_APPENDER}"/>
+        </Logger>
+        <Logger name="org.springframework.core" level="info" additivity="false">
+            <AppenderRef ref="${LOG_APPENDER}"/>
+        </Logger>
+        <Logger name="org.springframework.ui" level="info" additivity="false">
+            <AppenderRef ref="${LOG_APPENDER}"/>
+        </Logger>
+        <Logger name="org.springframework.beans" level="info" additivity="false">
+            <AppenderRef ref="${LOG_APPENDER}"/>
+        </Logger>
+        <Logger name="org.springframework.context" level="info" additivity="false">
+            <AppenderRef ref="${LOG_APPENDER}"/>
+        </Logger>
+        <Logger name="org.springframework.web" level="info" additivity="false">
+            <AppenderRef ref="${LOG_APPENDER}"/>
+        </Logger>
+        <Logger name="org.springframework.jndi" level="info" additivity="false">
+            <AppenderRef ref="${LOG_APPENDER}"/>
+        </Logger>
+        <!--<Logger name="jdbc.sqlonly" level="info" additivity="false">
+            <AppenderRef ref="${LOG_APPENDER}"/>
+        </Logger>
+        <Logger name="jdbc.audit" level="info" additivity="false">
+            <AppenderRef ref="${LOG_APPENDER}"/>
+        </Logger>
+        <Logger name="java.sql" level="debug" additivity="false">
+            <AppenderRef ref="${LOG_APPENDER}"/>
+        </Logger>-->
+        <Logger name="org.apache.velocity" level="info" additivity="false">
+            <AppenderRef ref="${LOG_APPENDER}"/>
+        </Logger>
+        <Logger name="kr.msp.admin.common.interceptor.EventExpirationCheckInterceptor" level="info" additivity="false">
+            <AppenderRef ref="EVENTLOG"/>
+        </Logger>
+        <Root level="warn">
+            <AppenderRef ref="${LOG_APPENDER}"/>
+        </Root>
+    </Loggers>
+</Configuration>

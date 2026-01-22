@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: madm-svc
+spec:
+  type: NodePort  #ClusterIP
+  selector:
+    app: madm
+  ports:
+    - port: 8080 # ingress 가 접속하는 port
+      targetPort: 8080  # Service -> pod / tomcat 으로 접속하는 port
+      nodePort: 30080

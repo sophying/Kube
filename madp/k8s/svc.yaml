@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: madp-svc
+spec:
+  type: NodePort  #ClusterIP
+  selector:
+    app: madp
+  ports:
+    - port: 8080 # ingress 가 접속하는 port
+      targetPort: 8080  # Service -> pod / tomcat 으로 접속하는 port
+      nodePort: 31080 # 30000 ~ 32767 범위 

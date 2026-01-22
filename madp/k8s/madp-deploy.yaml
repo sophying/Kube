@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: madp 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: madp
+  template:
+    metadata:
+      labels:
+        app: madp
+    spec:
+      containers:
+        - name: madp
+          image: kimhr/madp:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: share-volume
+              mountPath: /data/share
+              readOnly: true
+
+      volumes:
+        - name: share-volume
+          hostPath:
+            path: /kimhr/work/nas/share
+            type: DirectoryOrCreate
