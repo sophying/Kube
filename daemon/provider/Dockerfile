@@ -24,9 +24,9 @@ ENV PATH="${JAVA_HOME}/bin:$PATH"
 ENV CLASSPATH=".:./conf"
 #ENV JAVA_OPTS="-server -Xms1g -Xmx1g -XX:MaxMetaspaceSize=256m -Dreactor.netty.tcp.sshHandshakeTimeout=120000 -Djava.net.preferIPv4Stack=true"
 ENV JAVA_OPTS="-server -Xms512m -Xmx512m -XX:MaxMetaspaceSize=256m \
--Dreactor.netty.tcp.sshHandshakeTimeout=120000 \
 -Djava.net.preferIPv4Stack=true \
--Dreactor.netty.tcp.sshHandshakeTimeout=120000 -Djava.net.preferIPv4Stack=true"
+-Dreactor.netty.tcp.sshHandshakeTimeout=120000 -Djava.net.preferIPv4Stack=true \
+-Dfile.encoding=UTF-8"
 
 WORKDIR /home/kimhr
 
