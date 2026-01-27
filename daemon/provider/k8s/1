@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: provider
+spec:
+  replicas: 2 
+  selector:
+    matchLabels:
+      app: provider
+      port-set: "10420"
+  template:
+    metadata:
+      labels:
+        app: provider
+        port-set: "10420"
+    spec:
+      containers:
+      - name: provider
+        image: kimhr/provider:5.1.26
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 10420
+        - containerPort: 18443
+        - containerPort: 10421
+

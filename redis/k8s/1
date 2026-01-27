@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+spec:
+  serviceName: redis
+  replicas: 2
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7.4.6
+        ports:
+          - containerPort: 6379
+        command:
+          - sh
+          - -c
+          - |
+            if [ "$(hostname)" = "redis-0" ]; then
+              redis-server /etc/redis/redis.conf;
+            else
+              redis-server /etc/redis/redis.conf \
+                --replicaof redis-0.redis.default.svc.cluster.local 6379;
+            fi
+        volumeMounts:
+          - name: redis-config
+            mountPath: /etc/redis
+      volumes:
+        - name: redis-config
+          configMap:
+            name: redis-config
+

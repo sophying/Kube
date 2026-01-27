@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+
+    <property name="LOG_DIR" value="/var/log/upmc"/>
+    <property name="LOG_APPENDER" value="asyncSERVER"/>
+
+    <appender name="SERVER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <prudent>true</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="asyncSERVER" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <!-- 큐의 최대 용량. 기본적으로 QUEUESIZE는 256으로 설정됩니다. -->
+        <queueSize>2048</queueSize>
+        <!-- 해당 로그 이벤트 정보를 Queue에 추가하는 시점에 로그를 호출한 정보 (callerData)를 추출할지 여부를 결정하는 속성. false로 설정시 클래스 명은 안나오는 속도는 엄청남.-->
+        <includeCallerData>false</includeCallerData>
+        <!--queue에 가득차게 되는 경우 다른 쓰레드의 작업들이 blocking 상태에 빠지게 되는데 해당 옵션을 true하게 되면 blocking 상태에 빠지지 않고 log를 drop하며 계속 진행할 수 있게 해준다.-->
+        <neverBlock>true</neverBlock>
+        <!--(밀리 초) 큐의 최대 flush timeout 시간을 지정합니다.처리 할 수 없는 이벤트가 삭제됩니다.-->
+        <maxFlushTime>60000</maxFlushTime>
+        <appender-ref ref="SERVER"/>
+    </appender>
+
+    <appender name="SENTAPPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <prudent>true</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--매우중요! 아래의 디렉토리에 시스템 발송이 아닌 일반 발송이력 저장됨-->
+            <fileNamePattern>${LOG_DIR}/sent/sent.%d{yyyy-MM-dd}.csv</fileNamePattern>
+            <maxHistory>12</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>"%d{yyyy-MM-dd HH:mm:ss}",%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="SYSSENTAPPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <prudent>true</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--매우중요! 아래의 디렉토리에 시스템 발송이력 저장됨-->
+            <fileNamePattern>${LOG_DIR}/sent/sys/sent.%d{yyyy-MM-dd}.csv</fileNamePattern>
+            <maxHistory>12</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>"%d{yyyy-MM-dd HH:mm:ss}",%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="REVERRAPPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--매우중요! 아래의 디렉토리에 시스템 발송이력 저장됨-->
+            <fileNamePattern>${LOG_DIR}/error/rev.%d{yyyy-MM-dd}.csv</fileNamePattern>
+            <maxHistory>12</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>"%d{yyyy-MM-dd HH:mm:ss}",%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FAILERRAPPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--매우중요! 아래의 디렉토리에 시스템 발송이력 저장됨-->
+            <fileNamePattern>${LOG_DIR}/error/fail.%d{yyyy-MM-dd}.csv</fileNamePattern>
+            <maxHistory>12</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>"%d{yyyy-MM-dd HH:mm:ss}",%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="SMS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <prudent>true</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--매우중요! 아래의 디렉토리에 시스템 발송이력 저장됨-->
+            <fileNamePattern>${LOG_DIR}/sent/sms.%d{yyyy-MM-dd}.csv</fileNamePattern>
+            <maxHistory>12</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>"%d{yyyy-MM-dd HH:mm:ss}",%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="asyncSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <!-- 큐의 최대 용량. 기본적으로 QUEUESIZE는 256으로 설정됩니다. -->
+        <queueSize>2048</queueSize>
+        <!-- 해당 로그 이벤트 정보를 Queue에 추가하는 시점에 로그를 호출한 정보 (callerData)를 추출할지 여부를 결정하는 속성. false로 설정시 클래스 명은 안나오는 속도는 엄청남.-->
+        <includeCallerData>false</includeCallerData>
+        <!--queue에 가득차게 되는 경우 다른 쓰레드의 작업들이 blocking 상태에 빠지게 되는데 해당 옵션을 true하게 되면 blocking 상태에 빠지지 않고 log를 drop하며 계속 진행할 수 있게 해준다.-->
+        <neverBlock>true</neverBlock>
+        <!--(밀리 초) 큐의 최대 flush timeout 시간을 지정합니다.처리 할 수 없는 이벤트가 삭제됩니다.-->
+        <maxFlushTime>60000</maxFlushTime>
+        <appender-ref ref="STDOUT"/>
+    </appender>
+
+    <logger name="SENTLOG" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="SENTAPPENDER"/>
+    </logger>
+
+    <logger name="SYSSENTLOG" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="SYSSENTAPPENDER"/>
+    </logger>
+
+    <logger name="revErrLogger" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="REVERRAPPENDER"/>
+    </logger>
+
+    <logger name="failErrLogger" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="FAILERRAPPENDER"/>
+    </logger>
+
+    <logger name="sms" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="SMS"/>
+    </logger>
+
+    <logger name="manual" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="${LOG_APPENDER}"/>
+    </logger>
+
+    <logger name="manager" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="${LOG_APPENDER}"/>
+    </logger>
+
+    <logger name="kr.msp.push.receiver" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="${LOG_APPENDER}"/>
+    </logger>
+
+    <logger name="com.mium.client" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="${LOG_APPENDER}"/>
+    </logger>
+
+    <logger name="apns_feedback" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="${LOG_APPENDER}"/>
+    </logger>
+
+    <logger name="mybatis.batch" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="${LOG_APPENDER}"/>
+    </logger>
+
+    <root level="ERROR">
+        <appender-ref ref="${LOG_APPENDER}"/>
+    </root>
+</configuration>

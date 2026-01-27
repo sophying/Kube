@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+    <property name="LOG_DIR" value="./logs"/>
+    <!--    <property name="LOG_APPENDER" value="asyncSERVER"/>-->
+    <!-- 변경 -->
+    <property name="LOG_APPENDER" value="asyncSTDOUT"/>
+
+    <appender name="SERVER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <prudent>true</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/logFile.%d{yyyy-MM-dd-HH}.log</fileNamePattern>
+            <maxHistory>240</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="asyncSERVER" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>2048</queueSize>
+        <includeCallerData>false</includeCallerData>
+        <neverBlock>true</neverBlock>
+        <maxFlushTime>60000</maxFlushTime>
+        <appender-ref ref="SERVER"/>
+    </appender>
+
+    <appender name="FCMSENTAPPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <prudent>true</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/fcm/sent.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}|%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="APNSSENTAPPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <prudent>true</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/apns/sent.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}|%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="asyncSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>2048</queueSize>
+        <includeCallerData>false</includeCallerData>
+        <neverBlock>true</neverBlock>
+        <maxFlushTime>60000</maxFlushTime>
+        <appender-ref ref="STDOUT"/>
+    </appender>
+
+    <logger name="com.mium.server" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="${LOG_APPENDER}"/>
+    </logger>
+    <logger name="com.eatthepath.pushy" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="${LOG_APPENDER}"/>
+    </logger>
+    <logger name="com.google.firebase" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="${LOG_APPENDER}"/>
+    </logger>
+    <logger name="org.apache.http" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="${LOG_APPENDER}"/>
+    </logger>
+
+    <logger name="FCMSENTLOG" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="FCMSENTAPPENDER"/>
+    </logger>
+    <logger name="APNSSENTLOG" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="APNSSENTAPPENDER"/>
+    </logger>
+
+    <root>
+        <level value="WARN"/>
+        <appender-ref ref="${LOG_APPENDER}"/>
+    </root>
+</configuration>

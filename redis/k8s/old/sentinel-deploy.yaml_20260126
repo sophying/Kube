@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-sentinel
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: redis-sentinel
+  template:
+    metadata:
+      labels:
+        app: redis-sentinel
+    spec:
+      containers:
+      - name: sentinel
+        image: redis:7.4.6
+        ports:
+          - containerPort: 26379
+        command:
+          - redis-sentinel
+          - /etc/redis/sentinel.conf
+        volumeMounts:
+          - name: sentinel-config
+            mountPath: /etc/redis
+      volumes:
+        - name: sentinel-config
+          configMap:
+            name: redis-sentinel-config
+

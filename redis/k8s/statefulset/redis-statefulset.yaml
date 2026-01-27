@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: redis
+spec:
+  serviceName: redis
+  replicas: 2
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7.4.6
+          ports:
+            - containerPort: 6379
+          command:
+            - sh
+            - -c
+            - |
+              if [ "$(hostname)" = "redis-0" ]; then
+                echo "Starting Redis MASTER"
+                redis-server /etc/redis/redis.conf
+              else
+                echo "Starting Redis REPLICA"
+                redis-server /etc/redis/redis.conf --replicaof redis-0.redis 6379
+              fi
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /etc/redis
+      volumes:
+        - name: config
+          configMap:
+            name: redis-config
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+

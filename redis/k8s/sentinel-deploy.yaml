@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-sentinel
+  namespace: redis
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: redis-sentinel
+  template:
+    metadata:
+      labels:
+        app: redis-sentinel
+    spec:
+      securityContext:
+        fsGroup: 999            
+      containers:
+        - name: sentinel
+          image: redis:7.4.6
+          ports:
+            - containerPort: 26379
+          command:
+            - sh
+            - -c
+            - |
+              echo "waiting for redis dns..."
+              until getent hosts redis-0.redis.redis.svc.cluster.local; do sleep 1; done
+
+              echo "copy sentinel.conf to writable location"
+              cp /etc/redis/sentinel.conf /data/sentinel.conf
+
+              echo "starting sentinel"
+              redis-sentinel /data/sentinel.conf                  
+          volumeMounts:
+            - name: sentinel-config
+              mountPath: /etc/redis
+      volumes:
+        - name: sentinel-config
+          configMap:
+            name: redis-sentinel-config
+        - name: data
+          emptyDir: {}
