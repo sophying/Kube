@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: provider-batch 
+  namespace: push  
+spec:
+  replicas: 2 
+  selector:
+    matchLabels:
+      app: provider
+      role: batch      
+  template:
+    metadata:
+      labels:
+        app: provider
+        role: batch        
+    spec:
+      containers:
+      - name: provider
+        image: kimhr/provider:5.1.26
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 10420
+        - containerPort: 18443
+        - containerPort: 10421
+        env:
+          - name: PROVIDER_MODE
+            value: "batch"
+          
+        resources:
+          requests:
+            memory: "768Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"

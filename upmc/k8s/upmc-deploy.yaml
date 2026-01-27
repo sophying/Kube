@@ -1,20 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: madm
+  name: upmc
+  namespace: push
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: madm
+      app: upmc
   template:
     metadata:
       labels:
-        app: madm
+        app: upmc
     spec:
       containers:
-        - name: madm
-          image: kimhr/madm:1.0
+        - name: upmc
+          image: kimhr/upmc:1.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080

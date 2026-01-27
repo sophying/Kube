@@ -41,7 +41,7 @@ ENV PATH="${JAVA_HOME}/bin:${CATALINA_HOME}/bin:$PATH"
 
 # conf 덮어쓰기
 COPY ./docker/tomcat/conf/*.xml ${CATALINA_HOME}/conf/
-COPY ./docker/tomcat/bin/*.sh ${CATALINA_HOME}/bin/
+#COPY ./docker/tomcat/bin/*.sh ${CATALINA_HOME}/bin/
 
 # 소유권 + 권한 정리
 RUN set -eux; \ 
@@ -49,24 +49,31 @@ RUN set -eux; \
   && chmod 640 $CATALINA_HOME/conf/*.xml
 
 # 앱 WAR
-COPY --chown=1000:1000 ./app/madm-JDK18-4.5.23.war /home/kimhr/app/
+COPY --chown=1000:1000 ./app/upmc-5.1.45-R6.war /home/kimhr/app/
 
 # 6) 권한/해제
 RUN set -eux; \
   find "${CATALINA_HOME}/bin" -type f -name '*.sh' -exec chmod 755 '{}' + ; \
   cd /home/kimhr/app ; \
   ls -l /usr/lib/jvm; \
-  ${JAVA_HOME}/bin/jar -xf madm-JDK18-4.5.23.war; \  
+  ${JAVA_HOME}/bin/jar -xf upmc-5.1.45-R6.war; \  
   #jar -xf madm-JDK18-4.5.23.war ; \
-  rm -f madm-JDK18-4.5.23.war ; \
-  find /home/kimhr/app -type d -exec chmod 755 {} + ; \
-  find /home/kimhr/app -type f ! -name '*.sh' -exec chmod 644 '{}' + ; \
-  find /home/kimhr/app -type f -name '*.sh' -exec chmod 755 '{}' + 
+  rm -f upmc-5.1.45-R6.war 
+#  find /home/kimhr -type d -exec chmod 755 {} + ; \
+#  find /home/kimhr -type f ! -name '*.sh' -exec chmod 644 '{}' + ; \
+#  find /home/kimhr -type f -name '*.sh' -exec chmod 755 '{}' + 
 
 
-COPY --chown=1000:1000 ./conf_app/WEB-INF/classes/config/*.xml /home/kimhr/app/WEB-INF/classes/config/
-COPY --chown=1000:1000 ./conf_app/WEB-INF/config/license.* /home/kimhr/app/WEB-INF/config/
-COPY --chown=1000:1000 ./conf_app/WEB-INF/config/*.xml /home/kimhr/app/WEB-INF/config/
+COPY --chown=1000:1000 ./conf_app/WEB-INF/classes/logback.xml /home/kimhr/app/WEB-INF/classes/
+COPY --chown=1000:1000 ./conf_app/WEB-INF/classes/config/*.properties /home/kimhr/app/WEB-INF/classes/config/
+COPY --chown=1000:1000 ./conf_app/WEB-INF/classes/config/license.* /home/kimhr/app/WEB-INF/classes/config/
+COPY --chown=1000:1000 ./conf_app/WEB-INF/spring/application-context.xml /home/kimhr/app/WEB-INF/spring/
+
+RUN set -eux; \
+  find /home/kimhr -type d -exec chmod 755 {} + ; \
+  find /home/kimhr -type f ! -name '*.sh' -exec chmod 644 '{}' + ; \
+  find /home/kimhr -type f -name '*.sh' -exec chmod 755 '{}' +
+
 
 # 소유권 + 권한 정리
 RUN set -eux; \

@@ -1,16 +1,17 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: madm-ingress
+  name: upmc-ingress
+  namespace: push
 spec:
   rules:
-    - host: madm.local
+    - host: upmc.local
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: madm-svc
+                name: upmc-svc
                 port:
                   number: 8080

@@ -26,7 +26,7 @@
 
     <Resources allowLinking="true"/>
     <Resource name="jdbc/msp_mysql" auth="Container" type="javax.sql.DataSource"
-          driverClassName="com.mysql.cj.jdbc.Driver"
+          driverClassName="com.mysql.jdbc.Driver"
           url="jdbc:mysql://172.16.10.104:3306/kimhr?characterEncoding=UTF-8&amp;serverTimezone=Asia/Seoul&amp;autoReconnect=true&amp;zeroDateTimeBehavior=convertToNull"
           username="kimhr" password="Qhfhfh12#" minIdle="5" maxTotal="50"
           maxIdle="10" maxWaitMillis="-1" validationQuery="SELECT 1" />

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: sentinel 
-  namespace: redis
+  namespace: push 
 spec:
   serviceName: sentinel 
   replicas: 3

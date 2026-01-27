@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: redis-sentinel-config
-  namespace: redis
+  namespace: push 
 data:
   sentinel.conf: |
     port 26379

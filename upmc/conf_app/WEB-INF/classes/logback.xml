@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="60 seconds">
 
-    <property name="LOG_DIR" value="/var/log/upmc"/>
-    <property name="LOG_APPENDER" value="asyncSERVER"/>
+    <property name="LOG_DIR" value="./logs/upmc"/>
+    <!--<property name="LOG_APPENDER" value="asyncSERVER"/>-->
+    <property name="LOG_APPENDER" value="asyncSTDOUT"/>
 
     <appender name="SERVER" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <prudent>true</prudent>

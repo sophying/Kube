@@ -1,12 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: madm-svc
+  name: upmc-svc
+  namespace: push
 spec:
   type: NodePort  #ClusterIP
   selector:
-    app: madm
+    app: upmc
   ports:
     - port: 8080 # ingress 가 접속하는 port
       targetPort: 8080  # Service -> pod / tomcat 으로 접속하는 port
-      nodePort: 30080
+      nodePort: 32080
