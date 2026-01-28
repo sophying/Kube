@@ -2,6 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: madp-ingress
+  namespace: push
 spec:
   ingressClassName: nginx
   rules:
