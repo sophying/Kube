@@ -2,6 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: madm-ingress
+  namespace: push
 spec:
   rules:
     - host: madm.local

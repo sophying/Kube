@@ -38,10 +38,10 @@
 
 		<push>
 			<receiver>
-				<host>http://push-upmc-1:8080</host>
+				<host>http://upmc-svc:8080</host>
 			</receiver>
 			<message>
-				<absolute_path>/data/share/upmc/msg</absolute_path>
+				<absolute_path>/data/share/upmc/msg/</absolute_path>
 				<imageFolderName>tempImage</imageFolderName>
 				<htmlContentFolderName>html</htmlContentFolderName>
 				<totalInfoFolderName>totalInfo</totalInfoFolderName>

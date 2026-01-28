@@ -41,7 +41,7 @@ ENV PATH="${JAVA_HOME}/bin:${CATALINA_HOME}/bin:$PATH"
 
 # conf 덮어쓰기
 COPY ./docker/tomcat/conf/*.xml ${CATALINA_HOME}/conf/
-COPY ./docker/tomcat/bin/*.sh ${CATALINA_HOME}/bin/
+#COPY ./docker/tomcat/bin/*.sh ${CATALINA_HOME}/bin/
 
 # 소유권 + 권한 정리
 RUN set -eux; \ 
