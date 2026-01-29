@@ -13,6 +13,8 @@ spec:
       labels:
         app: upmc
     spec:
+      securityContext:
+        fsGroup: 1000            
       containers:
         - name: upmc
           image: kimhr/upmc:1.0

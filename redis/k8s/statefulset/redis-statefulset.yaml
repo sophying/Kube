@@ -27,9 +27,10 @@ spec:
                 echo "Starting Redis MASTER"
                 redis-server /etc/redis/redis.conf
               else
-                echo "Starting Redis REPLICA"
-                redis-server /etc/redis/redis.conf --replicaof redis-0.redis 6379
-              fi
+                echo "Starting Redis SLAVE"
+                redis-server /etc/redis/redis.conf \
+                  --replicaof redis-0.redis.push.svc.cluster.local 6379
+              fi                    
           volumeMounts:
             - name: data
               mountPath: /data

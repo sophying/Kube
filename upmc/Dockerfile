@@ -3,7 +3,7 @@ FROM rockylinux/rockylinux:9.6-minimal
 # 1) 필수 유틸
 RUN set -eux; \
   microdnf -y update; \
-  microdnf -y install findutils shadow-utils tar gzip unzip bash vim-minimal iproute net-tools; \
+  microdnf -y install findutils shadow-utils tar gzip unzip bash vim-minimal iproute net-tools bind-utils curl; \
   microdnf clean all
 
 # 2) 사용자/기본 디렉터리

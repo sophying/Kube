@@ -11,4 +11,4 @@ data:
     appendonly yes
     dir /data
     replica-read-only yes
-
+    requirepass morpheus+redis

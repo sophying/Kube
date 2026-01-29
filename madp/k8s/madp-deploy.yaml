@@ -23,9 +23,16 @@ spec:
             - name: share-volume
               mountPath: /data/share
               readOnly: true
+            - name: madp-eventlogs
+              mountPath: /home/kimhr/logs
 
       volumes:
         - name: share-volume
           hostPath:
             path: /kimhr/work/nas/share
             type: DirectoryOrCreate
+
+        - name: madp-eventlogs
+          hostPath:
+            path: /kimhr/work/nas/madp
+            type: DirectoryOrCreate          

@@ -11,7 +11,9 @@ data:
 
     sentinel resolve-hostnames yes
     sentinel announce-hostnames yes
-    sentinel monitor mymaster redis-0.redis.redis.svc.cluster.local 6379 2
+
+    sentinel monitor mymaster redis.push.svc.cluster.local 6379 2
     sentinel down-after-milliseconds mymaster 5000
     sentinel failover-timeout mymaster 10000
     sentinel parallel-syncs mymaster 1
+    sentinel auth-pass mymaster morpheus+redis    

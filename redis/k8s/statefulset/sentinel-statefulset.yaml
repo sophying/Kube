@@ -25,14 +25,11 @@ spec:
             - sh
             - -c
             - |
-              echo "waiting for redis dns..."
-              until getent hosts redis-0.redis.redis.svc.cluster.local; do sleep 1; done
+              echo "Waiting for Redis service DNS..."
+              until getent hosts redis.push.svc.cluster.local; do sleep 1; done
 
-              echo "copy sentinel.conf to writable location"
-              cp /etc/redis/sentinel.conf /data/sentinel.conf
-
-              echo "starting sentinel"
-              redis-sentinel /data/sentinel.conf
+              echo "Starting Sentinel"
+              redis-sentinel /etc/redis/sentinel.conf
 
           volumeMounts:
             - name: sentinel-config
