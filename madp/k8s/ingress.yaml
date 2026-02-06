@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: madp.local
+    - host: dev.madp.sophy
       http:
         paths:
           - path: /

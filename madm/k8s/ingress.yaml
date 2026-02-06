@@ -4,8 +4,9 @@ metadata:
   name: madm-ingress
   namespace: push
 spec:
+  ingressClassName: nginx        
   rules:
-    - host: madm.local
+    - host: dev.madm.sophy
       http:
         paths:
           - path: /
