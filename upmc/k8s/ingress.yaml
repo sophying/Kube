@@ -4,8 +4,9 @@ metadata:
   name: upmc-ingress
   namespace: push
 spec:
+  ingressClassName: nginx        
   rules:
-    - host: upmc.local
+    - host: dev.upmc.sophy
       http:
         paths:
           - path: /
