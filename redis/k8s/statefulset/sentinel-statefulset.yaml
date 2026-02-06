@@ -25,15 +25,19 @@ spec:
             - sh
             - -c
             - |
+              echo "Copying sentinel.conf to writable volume"
+              cp /config/sentinel.conf /data/sentinel.conf
+
               echo "Waiting for Redis service DNS..."
               until getent hosts redis.push.svc.cluster.local; do sleep 1; done
 
               echo "Starting Sentinel"
-              redis-sentinel /etc/redis/sentinel.conf
+              redis-sentinel /data/sentinel.conf
 
           volumeMounts:
             - name: sentinel-config
-              mountPath: /etc/redis
+              mountPath: /config
+              readOnly: true
             - name: data
               mountPath: /data
       volumes:

@@ -5,7 +5,7 @@ metadata:
   namespace: push
 spec:
   serviceName: redis
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: redis
@@ -29,7 +29,8 @@ spec:
               else
                 echo "Starting Redis SLAVE"
                 redis-server /etc/redis/redis.conf \
-                  --replicaof redis-0.redis.push.svc.cluster.local 6379
+                  --replicaof redis-0.redis.push.svc.cluster.local 6379 \
+                  --masterauth morpheus+redis
               fi                    
           volumeMounts:
             - name: data

@@ -1,0 +1,22 @@
+architecture: replication
+
+auth:
+  enabled: true
+  password: morpheus+redis
+  sentinel: false  
+
+replica:
+  replicaCount: 3   # Master 1 + Slave 2 = Sentinel 3
+
+sentinel:
+  enabled: true
+  quorum: 2
+
+master:
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 300m
+    limits:
+      memory: 1Gi
+      cpu: 1
