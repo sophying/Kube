@@ -3,7 +3,7 @@
   apache/conf/extra/httpd-vhosts.conf
 -----------------------------------------
   
-    <VirtualHost *:80>                                ### 0포트로 들어오는 요청 중에서, 이 조건에 맞으면 이 설정을 써라
+    <VirtualHost *:80>                                ### 80포트로 들어오는 요청 중에서, 이 조건에 맞으면 이 설정을 써라
     
       ServerName dev.madm.sophy                       ### 누구 요청인지 구분. Host 헤더가 dev.madm.sophy 면 이 블록 사용
 
