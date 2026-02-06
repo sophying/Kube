@@ -22,9 +22,25 @@ spec:
           volumeMounts:
             - name: share-volume
               mountPath: /data/share
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
 
       volumes:
         - name: share-volume
           hostPath:
             path: /kimhr/work/nas/share
             type: DirectoryOrCreate
+
+#          resources:
+#            requests:
+#              memory: "1Gi"
+#              cpu: "1.0"
+#            limits:
+#              memory: "4Gi"
+#              cpu: "4.0"
+                       

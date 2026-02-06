@@ -46,7 +46,7 @@
 				<htmlContentFolderName>html</htmlContentFolderName>
 				<totalInfoFolderName>totalInfo</totalInfoFolderName>
 				<csvFolderName>csv</csvFolderName>
-				<absolute_path_web>http://test.world.sophy/msg/</absolute_path_web>
+				<absolute_path_web>http://dev.upmc.sophy/msg/</absolute_path_web>
 			</message>
 			<!-- 예약 발송 스케줄러 동작 여부 설정 [true | false] -->
 			<reserved_send>

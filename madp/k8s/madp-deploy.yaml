@@ -25,7 +25,13 @@ spec:
               readOnly: true
             - name: madp-eventlogs
               mountPath: /home/kimhr/logs
-
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"              
       volumes:
         - name: share-volume
           hostPath:
@@ -36,3 +42,12 @@ spec:
           hostPath:
             path: /kimhr/work/nas/madp
             type: DirectoryOrCreate          
+
+#          resources:
+#            requests:
+#              cpu: "2.0"
+#              memory: "4Gi"
+#            limits:
+#              cpu: "4.0"
+#              memory: "8Gi"
+                          
