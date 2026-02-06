@@ -1,18 +1,24 @@
 ## minikube 
-- 리버스 proxy 설정 필수
+- Reverse proxy 설정 필수
   apache/conf/extra/httpd-vhosts.conf
 -----------------------------------------
   
-    <VirtualHost *:80>
+    <VirtualHost *:80>                                ### 0포트로 들어오는 요청 중에서, 이 조건에 맞으면 이 설정을 써라
     
-      ServerName dev.madm.sophy
+      ServerName dev.madm.sophy                       ### 누구 요청인지 구분. Host 헤더가 dev.madm.sophy 면 이 블록 사용
 
-      ProxyPreserveHost On
-      ProxyRequests Off
+      ProxyPreserveHost On                            ### 원래 요청의 Host 값을 그대로 뒤에 전달 
+              
+              # 브라우저 → Apache:
+                # Host: dev.madm.sophy
+              # Apache → Kube:
+                # Host: dev.madm.sophy
+              
+      ProxyRequests Off                               ### Forward Proxy 기능 끄기
 
       # Ingress로 전달
-      ProxyPass / http://192.168.76.2:30080/
-      ProxyPassReverse / http://192.168.76.2:30080/
+      ProxyPass / http://192.168.76.2:30080/          ### 웹에서  / 로 들어오는 모든 것(VirtualHost로 들어온 모든 요청(/))을 http://192.168.76.2:30080 로 전달 (어디로 보낼지)
+      ProxyPassReverse / http://192.168.76.2:30080/   ### 역방향 서버 -> 웹으로 나갈 때도 (백엔드가 응답할 때) http://192.168.76.2:30080 -> http://dev.madm.sophy 변환
 
       ErrorLog logs/madm_error.log
       CustomLog logs/madm_access.log combined
