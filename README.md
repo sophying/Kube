@@ -1,4 +1,4 @@
-### minikube 
+## minikube 
 - 리버스 proxy 설정 필수
   apache/conf/extra/httpd-vhosts.conf
 -----------------------------------------
@@ -45,4 +45,10 @@
       ErrorLog logs/upmc_error.log
       CustomLog logs/upmc_access.log combined
     </VirtualHost>
+---------------------------------------
+## Windows hosts 파일 수정 필수 
+- \<kube host Server IP> dev.madm.sophy
+- \<kube host Server IP> dev.madp.sophy
+- \<kube host Server IP> dev.upmc.sophy
 
+### WEB Browser -> kube host Server (linux VM) -> kube cluster Container
