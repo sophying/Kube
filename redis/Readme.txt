@@ -34,3 +34,8 @@ helm uninstall redis -n push
 
 ### show info 
 helm show values bitnami/redis
+
+### Helm values 확인
+helm get values redis -n <namespace>
+helm get values redis -n push
+
