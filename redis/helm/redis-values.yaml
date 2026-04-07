@@ -1,9 +1,9 @@
 architecture: replication
 
 auth:
-  enabled: true
+  enabled: true #Redis 접속 시 반드시 비밀번호(AUTH)가 필요함을 의미 
   password: morpheus+redis
-  sentinel: false  
+  sentinel: false #Redis 노드 간 인증은 활성화되어 있으나, Sentinel 자체에 대한 인증(Sentinel 간 통신)은 비활성화 
 
 replica:
   replicaCount: 3   # Master 1 + Slave 2 = Sentinel 3

@@ -23,7 +23,9 @@ spec:
             - containerPort: 8080
           volumeMounts:
             - name: share-volume
-              mountPath: /data/share
+#              mountPath: /data/share
+              mountPath: /msg
+              subPath: upmc/msg     # <-- 호스트 폴더 중 upmc/msg 내용만 가져옴              
           resources:
             requests:
               cpu: "200m"
