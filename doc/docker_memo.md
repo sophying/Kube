@@ -1,9 +1,12 @@
 ### 모든 이미지의 레이어들을 하나의 파일로 통합 tatal 3.1GB
-/docker save kimhr/madm:1.0 kimhr/upmc:1.0 kimhr/madp:1.0 kimhr/provider:5.1.26 > all_images.tar
+  
+docker save kimhr/madm:1.0 kimhr/upmc:1.0 kimhr/madp:1.0 kimhr/provider:5.1.26 > all_images.tar
 
 ### docker images load 
-- 도커 엔진에 넣을 때
-/docker load < all_images.tar
+
+- 도커 엔진에 넣을 때  
+  
+docker load < all_images.tar
 
 -----------------------------
 	태그(Tag) 유지: docker load를 하면 이미지 이름뿐만 아니라 1.0, 5.1.26 같은 태그까지 완벽하게 복구됩니다.  
