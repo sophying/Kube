@@ -5,17 +5,17 @@
 helm install redis bitnami/redis -n push --create-namespace --set architecture=replication --set sentinel.enabled=true
 
 -----------------------------------------  
-helm install 			# 새로운 Helm 차트를 Kubernetes 클러스터에 설치  
-redis 				# Release 이름(K8s 리소스 접두사로 사용됨)  
-bitnami/redis 			# 차트 경로 (Bitnami 저장소에 등록된 공식 Redis 차트를 사용)  
--n push 			# Namespace (모든 리소스를 격리하여 배치)  
---create-namespace  		# 만약 push 네임스페이스가 존재하지 않으면 자동으로 생성  
---set architecture=replication 	# Redis를 단순 'Standalone(단일 노드)'이 아닌 'Master-Replica(복제)' 구조로 구성  
---set sentinel.enabled=true	# Redis Sentinel 프로세스를 활성화
+	helm install 			# 새로운 Helm 차트를 Kubernetes 클러스터에 설치  
+	redis 				# Release 이름(K8s 리소스 접두사로 사용됨)  
+	bitnami/redis 			# 차트 경로 (Bitnami 저장소에 등록된 공식 Redis 차트를 사용)  
+	-n push 			# Namespace (모든 리소스를 격리하여 배치)  
+	--create-namespace  		# 만약 push 네임스페이스가 존재하지 않으면 자동으로 생성  
+	--set architecture=replication 	# Redis를 단순 'Standalone(단일 노드)'이 아닌 'Master-Replica(복제)' 구조로 구성  
+	--set sentinel.enabled=true	# Redis Sentinel 프로세스를 활성화
 
-	\role1: 감시(Monitoring): Master 노드가 정상인지 실시간체크
-	\role2: 자동 장애 조치(Failover): 만약 Master가 죽으면, Sentinel들이 투표를 통해 Replica 중 하나를 새로운 Master로 승격
-	\role3: 알림(Notification): 클라이언트에게 현재 누가 Master인지 정보를 제공
+- role1: 감시(Monitoring): Master 노드가 정상인지 실시간체크
+- role2: 자동 장애 조치(Failover): 만약 Master가 죽으면, Sentinel들이 투표를 통해 Replica 중 하나를 새로운 Master로 승격
+- role3: 알림(Notification): 클라이언트에게 현재 누가 Master인지 정보를 제공
 
 
 ### Creat redis yaml file 
