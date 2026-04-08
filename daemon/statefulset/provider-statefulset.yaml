@@ -1,0 +1,333 @@
+appVersion: apps/v1
+kind: StatefulSet
+metadata: provider 
+  name: provider
+  labels:
+    app: provider
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: provider # spec.selector.matchLabels.app == spec.template.metadata.labels.app 
+  template:
+    metadata:
+      labels:
+        app: provider
+    spec: 
+      affinity: # pod 배치 전략
+        nodeAffinity: # 특정 노드(prv-node-1,prv-node-2)에서만 파드가 기동/고정 IP&경로가 필요할 때 사용
+          requiredDuringSchedulingIgnoredDuringExecution:  # 반드시 지켜야 하는 "Hard" 규칙
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - prv-node-1
+                - prv-node-2
+         podAntiAffinity: # 동일한 app: provider 레이블을 가진 파드끼리 같은 노드에 있지 않게/ 고가용성(HA)을 위해 파드를 여러 노드로 분산
+           requiredDuringSchedulingIgnoredDuringExecution:
+           - labelSelector:
+               matchExpressions:
+               - key: app
+                 operator: In
+                 values:
+                 - provider 
+             topologyKey: kubernetes.io/hostname # 분산의 기준을 노드(hostname) 단위로 설정
+      containers:
+      - name: provider
+        image: kimhr/provider:5.1.26
+        ports:
+        - containerPort: 10420
+          name: service
+        - containerPort: 10421
+          name: monitoring
+        volumeMounts:
+        - name: license-volume
+          mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/license.key
+          subPath: license.key # ConfigMap이나 Secret 전체가 아닌, 특정 파일 하나만 지정된 경로에 마운트하고 싶을 때 사용(디렉터리 덮어쓰기 방지)
+          readOnly: true # 컨테이너 안에서 해당 설정 파일을 수정할 수 없게 보호
+        - name: license-volume
+          mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/license.cer 
+          subPath: license.cer
+          readOnly: true
+        - name: certificate-volume
+          mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/token-auth-private-key.p8
+          subPath: AuthKey_0123456789.p8
+          readOnly: true
+        - name: certificate-volume
+          mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/mock-project-id-none.json
+          subPath: mock-project-id-none.json
+          readOnly: true
+        - name: config-volume
+          mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/config.properties
+          subPath: config.properties
+          readOnly: true
+        - name: config-volume
+          mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/logback.xml
+          subPath: logback.xml
+          readOnly: true
+      volumes:
+        - name: license-volume
+          secret:
+            secretName: push-license
+        - name: certificate-volume
+          secret:
+            secretName: push-certificate
+        - name: config-volume
+          configMap:
+            name: provider-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: provider-stf-nodeport
+  labels:
+    app: provider
+spec:
+  type: NodePort
+  selector:
+    app: provider
+  ports:
+  - port: 10420
+    targetPort: 10420
+    nodePort: 30600
+    name: service
+  - port: 10421
+    targetPort: 10421
+    nodePort: 30700
+    name: monitoring
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: push-license
+type: Opaque
+data:
+  license.key: LS0tLS1CRUdJTi... # base64 encoded license.key file
+  license.cer: LS0tLS1CRUdJTi... # base64 encoded license.cer file
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: push-certificate
+type: Opaque
+stringData:
+  AuthKey_0123456789.p8: |
+    -----BEGIN PRIVATE KEY-----
+    MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgupTFGBOZFMLlNJYr
+    obN5w/Gpp4Un37JmkLIQ1eSVRM6hRANCAARWvXN7hpi86fvQUY7rE8IJ/C6bUSPs
+    FwT2Z60gp37DKGeuTwMb61g4KflNiEbYDHFbBOAk9cTK3+yb/RoeSBz6
+    -----END PRIVATE KEY-----
+  sample-adminsdk-abcde-1234567890.json: |
+    {
+      "type": "service_account",
+      "project_id": "uracle-push-demo",
+      "private_key_id": "ffffb42115cf02026a49a84854583ca27fb92cb7",
+      "private_key": "-----BEGIN PRIVATE KEY-----\naaaaaa\n-----END PRIVATE KEY-----\n",
+      "client_email": "firebase-adminsdk-rgmdn@project.iam.gserviceaccount.com",
+      "client_id": "12345555",
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": "https://oauth2.googleapis.com/token",
+      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-rgmdn%40uracle-push-demo.iam.gserviceaccount.com",
+      "universe_domain": "googleapis.com"
+    }
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: provider-config
+data:
+  config.properties: |
+    ## 반드시 모두 소문자로 입력
+    APPID=test.world.sophy
+    #APNS_BUNDLEID_MAP=com.uracle.push.test:com.uracle.push.test.voip,com.uracle.push.demo:com.uracle.push.demo.ios
+    ## GCM PROTOCOL KIND : HTTP
+    GCM_USE_PROTOCOL=HTTP
+
+    ## APNS PROTOCOL KIND : HTTP2
+    APNS_USE_PROTOCOL=HTTP2
+    ## binary=>http2로 변경되는 사이트 중 alert를 String으로 만 처리 가능하도록 클라이언트가 개발된 경우. STRING로 셋팅
+    APNS_ALERT_KIND=OBJECT
+
+    ##해당사항이 없으면 빈값으로 넣어둔다. ex) GCM_TOKEN_SRC1=
+    GCM_TOKEN_SRC1=./conf/mock-project-id-none.json
+
+    ### GCM 메세지 alert, ext 정보 암호화 여부. 암호화 처리할 appid를 쉼표 구분자로 넣어주세요.
+    #GCM_MSG_ENCRYPT_APP_LIST=com.uracle.push.test
+    ###APNS HTTP2 AuthKey 방식 일 경우 정보
+    APNS_HTTP2_TOKEN_SRC1=./conf/token-auth-private-key.p8
+    APNS_HTTP2_TEAMKEY1=TEAMKEY123
+    APNS_HTTP2_KEYID1=KEYID12345
+
+    ##APNS MOD ex)DEV, REAL
+    #APNS_MODE1=DEV
+    #APNS_DEV_CERT_SRC1=./conf/democlientPush.p12
+    #APNS_DEV_CERT_PASSWD1 =uracle1234
+    #APNS_DEV_CERT_EXPIRE1=2022-07-27
+    #APNS_REAL_CERT_SRC1=./conf/democlientPush.p12
+    #APNS_REAL_CERT_PASSWD1 =uracle1234
+    #APNS_REAL_CERT_EXPIRE1=2022-07-27
+
+    ################################################
+    # 변경시는 내용을 확실히 알고 변경하세요.
+    ################################################
+    PORT=10420
+    SSLPORT=18443
+    MONITORING_PORT=10421
+    WORKTHREAD_CNT=50
+    ##APNS 메세지 데이타 EXT 값 설정
+    APNS_USE_EXT=Y
+    ## 앱아이디 넘기지 않음
+    APNS_REMOVE_APPID=Y
+    ## APNS HTTP2 사용 시 메시지만 입력하면 내용을 JSON 형태로 가공하지 않고 그대로 보내기.
+    APNS_PREFER_STRING_REPRESENTATION=N
+    ## EXT 데이타를 재가공 하지 않고 받은 그대로 보내기.
+    APNS_EXT_ORG_SEND=Y
+    ## GCM 메시지 만료시간(최대값 2419200 / 단위 초)
+    GCM_MSG_EXPIRE_SECOND=2419200
+    ## 발송시간 제한
+    SEND_TIME_OVER_YN=N
+    NOT_SEND_TIME_LIST=1,2,3,4,5,6
+    ## GCM 발송 타임아웃(기본값 200 / 단위 ms)
+    GCM_SEND_TIMEOUT=200
+    ## GCM 발송 풀 크기(기본값 70 / 단위 개수)
+    GCM_SEND_POOL_SIZE=70
+    ## GCM HTTP KeepAlive 유지시간(기본값 3 / 단위 분)
+    GCM_SEND_KEEPALIVE_TTL=3
+    ## GCM HTTP 접속 유지시간(기본값 10 / 단위 분)
+    GCM_SEND_CONNECTION_TTL=10
+
+    ## GCM HTTP 발송 쓰레드 수(기본값 50 / 단위 개수)
+    GCM_SEND_THREAD_CNT=50
+    ##사용자 정의 메시지 만료시간 사용여부(SMS_READ_WAIT_MINUTE 파라미터)
+    MANUAL_SEND_EXPIRE=N
+    ################################################
+    # N/W 관련 장애시 Queue에 적재만 되고, WorkerThread가 WATING 상태가 될 때 자동 장애조치 기능
+    # Queue > 0 && OUT == 0 조건에서 MALFUNCTION_WARN_TIME 설정 값 초과시 프로바이더 서비스를 제어할 수 있음
+    ################################################
+    ## 자동 장애조치 사용유무(사용시 큐 모니터링 정보 수집 http://SERVER_IP:10421/getIdleInfo.prv)
+    MALFUNCTION_USE_YN=N
+    ## Queue > 0 && OUT == 0 조건을 만족하는 횟수(분 단위, 최소 3, 권장 5 이상)
+    MALFUNCTION_WARN_TIME=5
+    ## 장애조치 선택 NONE or UNBIND or KILL or RESTART
+    ##   NONE   : (기본값) 아무런 엑션을 하지 않음
+    ##   UNBIND : 서비스 포트(10420)를 정상 발송이 될 때까지 Unbind
+    ##   KILL   : PROVIDER 종료(수동으로 기동이 필요함)
+    ##   RESTART: 모든 서비스 포트를 Unbind -> 신규 PROVIDER 기동 -> 현재 PROVIDER 종료
+    MALFUNCTION_BYPASS_ACTION=NONE
+    ## MALFUNCTION_BYPASS_ACTION을 RESTART 설정시 기동할 쉘 스크립트(값에 공백이 없어야 함)
+    MALFUNCTION_RESTART_CMD=/bin/sh /Users/swryu/provider/start.sh
+
+    ## APNS 메시지 만료시간(최대값 2592000 / 단위 초)
+    APNS_MSG_EXPIRE_SECOND=2592000
+    ################################################
+    # provider 인증서 업로드 연결 허용 아이피.
+    ################################################
+    security.using=false
+    security.ignore.targetCount=4
+    security.ignore.targets.ip1=127.0.0.1
+    security.ignore.targets.ip2=0:0:0:0:0:0:0:1
+    security.ignore.targets.ip3=0:0:0:0:0:0:0:1%0
+    security.ignore.targets.ip4=100.100.100.11-20
+
+    ## 테스트를 위해 PUBLIC 푸시로 발송하지 않고, 즉시 UPMC에 성공처리 여부
+    PUSH_TEST_YN=N
+
+  logback.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <configuration scan="true" scanPeriod="60 seconds">
+        <property name="LOG_DIR" value="./logs"/>
+        <property name="LOG_APPENDER" value="asyncSTDOUT"/>
+
+        <appender name="SERVER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <prudent>true</prudent>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_DIR}/logFile.%d{yyyy-MM-dd-HH}.log</fileNamePattern>
+                <maxHistory>240</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+            </encoder>
+        </appender>
+        <appender name="asyncSERVER" class="ch.qos.logback.classic.AsyncAppender">
+            <discardingThreshold>0</discardingThreshold>
+            <queueSize>2048</queueSize>
+            <includeCallerData>false</includeCallerData>
+            <neverBlock>true</neverBlock>
+            <maxFlushTime>60000</maxFlushTime>
+            <appender-ref ref="SERVER"/>
+        </appender>
+
+        <!--<appender name="FCMSENTAPPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <prudent>true</prudent>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_DIR}/fcm/sent.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}|%msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <appender name="APNSSENTAPPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <prudent>true</prudent>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_DIR}/apns/sent.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}|%msg%n</pattern>
+            </encoder>
+        </appender>-->
+
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
+            </encoder>
+        </appender>
+        <appender name="asyncSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
+            <discardingThreshold>0</discardingThreshold>
+            <queueSize>2048</queueSize>
+            <includeCallerData>false</includeCallerData>
+            <neverBlock>true</neverBlock>
+            <maxFlushTime>60000</maxFlushTime>
+            <appender-ref ref="STDOUT"/>
+        </appender>
+
+        <logger name="com.mium.server" additivity="false">
+            <level value="DEBUG"/>
+            <appender-ref ref="${LOG_APPENDER}"/>
+        </logger>
+        <logger name="com.eatthepath.pushy" additivity="false">
+            <level value="INFO"/>
+            <appender-ref ref="${LOG_APPENDER}"/>
+        </logger>
+        <logger name="com.google.firebase" additivity="false">
+            <level value="INFO"/>
+            <appender-ref ref="${LOG_APPENDER}"/>
+        </logger>
+        <logger name="org.apache.http" additivity="false">
+            <level value="INFO"/>
+            <appender-ref ref="${LOG_APPENDER}"/>
+        </logger>
+
+        <!--<logger name="FCMSENTLOG" additivity="false">
+            <level value="INFO"/>
+            <appender-ref ref="FCMSENTAPPENDER"/>
+        </logger>
+        <logger name="APNSSENTLOG" additivity="false">
+            <level value="INFO"/>
+            <appender-ref ref="APNSSENTAPPENDER"/>
+        </logger>-->
+
+        <root>
+            <level value="WARN"/>
+            <appender-ref ref="${LOG_APPENDER}"/>
+        </root>
+    </configuration>
+
