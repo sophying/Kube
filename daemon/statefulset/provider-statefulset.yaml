@@ -89,9 +89,9 @@ spec:
   selector:
     app: provider
   ports:
-  - port: 10420
+  - port: 10420 # 서비스 내부 포트 (Service: 실제 푸시 발송 요청을 받는 포트)
     targetPort: 10420
-    nodePort: 30600
+    nodePort: 30600 # 외부에서 접속하는 물리 포트
     name: service
   - port: 10421
     targetPort: 10421
@@ -100,14 +100,29 @@ spec:
 
 ---
 apiVersion: v1
-kind: Secret
+kind: Secret # 보안 데이터를 다루는 'Secret'임을 정의
 metadata:
   name: push-license
-type: Opaque
+type: Opaque # K8s의 기본 타입으로, 구조화되지 않은 임의의 데이터를 저장할 때 사용
 data:
-  license.key: LS0tLS1CRUdJTi... # base64 encoded license.key file
-  license.cer: LS0tLS1CRUdJTi... # base64 encoded license.cer file
-
+#  license.key: LS0tLS1CRUdJTi... # base64 encoded license.key file
+#  license.cer: LS0tLS1CRUdJTi... # base64 encoded license.cer file
+  license.key: |
+    I1dlZCBKYW4gMjEgMTM6MzA6MDYgS1NUIDIwMjYKYXBwbGljYXRpb25faWQ9dGVzdC53b3JsZC5z
+    b3BoeQpleHBpcmF0aW9uX2RhdGU9OTk5OS0xMi0zMQppcF9hZGRyZXNzPTEyNy4wLjAuMQp0ZXN0
+    LndvcmxkLnNvcGh5Lm1wc249MmU2QktBSzR5YlZuSlg5eTh6eUsKdGVzdC53b3JsZC5zb3BoeS5z
+    bj1XdG5tZllPRjZuMmZDeUozZHdsZE9ybklCWmUwbVdJVFdiVXhnQVhUZXVxem83Z1NuNUE3N0lx
+    YVBRdFpOUzNxUEl1aW1RcWpxTmlGT25uRTQ5TkVsYTBvRnRhMlZHdkdrTU1BMUViUUcwazBaMzha
+    cTlNZXAxTGt0SUNnYU10VVZJRHNCdzNTb1VhNDh2WDJpQ3VCVnJkbURPY01MaTJOeWNQNDFxWHZt
+    bExJdXZqODNqRlA1MU0ycFFhOUhHOGNGVE9Dcm5NMWtRblo0WTFyQnpZUmtWQ3NOdWJkNTZpaE9E
+    UFZuNW5rd05oMU5XemZhaXBZYzdKTlRGa1B2Qk9NaHJEMWNjOXZFQ2NsMHJOQWVielo5dktMZjV4
+    cWF4V0QwWThpMkFacGt3a3EyMTJLTGZyYXZwQlc5V3Ntb3lMTnZvbGFnQjhLTmRjWmNld2tUelhJ
+    wTlRemMyS0NHd1FiNDJqUGZRUmNLNHE2MU1HdG9FMFM3OFlzVFRsRGtVQmFaUkVOUUZtOTVWRFg2
+    TnNhcjJPT29TbVJnT2F6MVNJQ3lLZXdkZWloSFdCNmV1R3VmbUY1cGZtRmNocW0wenFQdDRvMks5
+    NTljeEtzT1hIY3E5NG1ycHNtaFpIdk1xSkg0N2RYUU9YaElYa2ZlS2RQM1NjMVVzRkEzbmNP....
+  license.cer: |
+    Q7FpkIJNfLr3W6Td7+91KJtvWP9cY6SPqLXAepX1hOoQBmLfFs9fdT8RCeCk6Da34Odddd.....
+          
 ---
 apiVersion: v1
 kind: Secret
