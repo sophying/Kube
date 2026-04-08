@@ -30,7 +30,8 @@
 	3) YAML 파일로 추출하여 영구 관리 (권장)
 	
 	kubectl get secret push-license -o yaml > push-license.yaml
-	# 적용
+	  
+	- 적용
 	kubectl apply -f push-license.yaml 
 
 4. 주의사항: 수정 후 Pod 반영
