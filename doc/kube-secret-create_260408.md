@@ -10,6 +10,11 @@
 	kubectl create secret generic push-license \
 	--from-file=license.key=/kimhr/work/prd-root/daemon/provider/conf_app/conf/license.key \
 	--from-file=license.cer=/kimhr/work/prd-root/daemon/provider/conf_app/conf/license.cer
+
+	kubectl create secret generic push-certificate \  
+	--from-file=token-auth-private-key.p8=/kimhr/work/prd-root/daemon/provider/conf_app/conf/token-auth-private-key.p8 \  
+	--from-file=mock-project-id-none.json=/kimhr/work/prd-root/daemon/provider/conf_app/conf/mock-project-id-none.json  
+
 ----------------------------------
 
 ### 2. 확인 

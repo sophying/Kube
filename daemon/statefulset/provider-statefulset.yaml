@@ -1,6 +1,6 @@
-appVersion: apps/v1
+apiVersion: apps/v1
 kind: StatefulSet
-metadata: provider 
+metadata: 
   name: provider
   labels:
     app: provider
@@ -14,58 +14,58 @@ spec:
       labels:
         app: provider
     spec: 
-      affinity: # pod 배치 전략
-        nodeAffinity: # 특정 노드(prv-node-1,prv-node-2)에서만 파드가 기동/고정 IP&경로가 필요할 때 사용
-          requiredDuringSchedulingIgnoredDuringExecution:  # 반드시 지켜야 하는 "Hard" 규칙
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: kubernetes.io/hostname
-                operator: In
-                values:
-                - prv-node-1
-                - prv-node-2
-         podAntiAffinity: # 동일한 app: provider 레이블을 가진 파드끼리 같은 노드에 있지 않게/ 고가용성(HA)을 위해 파드를 여러 노드로 분산
-           requiredDuringSchedulingIgnoredDuringExecution:
-           - labelSelector:
-               matchExpressions:
-               - key: app
-                 operator: In
-                 values:
-                 - provider 
-             topologyKey: kubernetes.io/hostname # 분산의 기준을 노드(hostname) 단위로 설정
+#      affinity: # pod 배치 전략
+#        nodeAffinity: # 특정 노드(prv-node-1,prv-node-2)에서만 파드가 기동/고정 IP&경로가 필요할 때 사용
+#          requiredDuringSchedulingIgnoredDuringExecution:  # 반드시 지켜야 하는 "Hard" 규칙
+#            nodeSelectorTerms:
+#            - matchExpressions:
+#              - key: kubernetes.io/hostname
+#                operator: In
+#                values:
+#                  - prv-node-1
+#                  - prv-node-2
+#        podAntiAffinity: # 동일한 app: provider 레이블을 가진 파드끼리 같은 노드에 있지 않게/ 고가용성(HA)을 위해 파드를 여러 노드로 분산
+#          requiredDuringSchedulingIgnoredDuringExecution:
+#          - labelSelector:
+#              matchExpressions:
+#              - key: app
+#                operator: In
+#                values:
+#                - provider 
+#            topologyKey: kubernetes.io/hostname # 분산의 기준을 노드(hostname) 단위로 설정
       containers:
-      - name: provider
-        image: kimhr/provider:5.1.26
-        ports:
-        - containerPort: 10420
-          name: service
-        - containerPort: 10421
-          name: monitoring
-        volumeMounts:
-        - name: license-volume
-          mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/license.key
-          subPath: license.key # ConfigMap이나 Secret 전체가 아닌, 특정 파일 하나만 지정된 경로에 마운트하고 싶을 때 사용(디렉터리 덮어쓰기 방지)
-          readOnly: true # 컨테이너 안에서 해당 설정 파일을 수정할 수 없게 보호
-        - name: license-volume
-          mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/license.cer 
-          subPath: license.cer
-          readOnly: true
-        - name: certificate-volume
-          mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/token-auth-private-key.p8
-          subPath: AuthKey_0123456789.p8
-          readOnly: true
-        - name: certificate-volume
-          mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/mock-project-id-none.json
-          subPath: mock-project-id-none.json
-          readOnly: true
-        - name: config-volume
-          mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/config.properties
-          subPath: config.properties
-          readOnly: true
-        - name: config-volume
-          mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/logback.xml
-          subPath: logback.xml
-          readOnly: true
+        - name: provider
+          image: kimhr/provider:5.1.26
+          ports:
+          - containerPort: 10420
+            name: service
+          - containerPort: 10421
+            name: monitoring
+          volumeMounts:
+          - name: license-volume
+            mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/license.key
+            subPath: license.key # ConfigMap이나 Secret 전체가 아닌, 특정 파일 하나만 지정된 경로에 마운트하고 싶을 때 사용(디렉터리 덮어쓰기 방지)
+            readOnly: true # 컨테이너 안에서 해당 설정 파일을 수정할 수 없게 보호
+          - name: license-volume
+            mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/license.cer 
+            subPath: license.cer
+            readOnly: true
+          - name: certificate-volume
+            mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/token-auth-private-key.p8
+            subPath: AuthKey_0123456789.p8
+            readOnly: true
+          - name: certificate-volume
+            mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/mock-project-id-none.json
+            subPath: mock-project-id-none.json
+            readOnly: true
+          - name: config-volume
+            mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/config.properties
+            subPath: config.properties
+            readOnly: true
+          - name: config-volume
+            mountPath: /kimhr/work/prd-root/daemon/provider/conf_app/conf/logback.xml
+            subPath: logback.xml
+            readOnly: true
       volumes:
         - name: license-volume
           secret:
@@ -104,7 +104,7 @@ kind: Secret # 보안 데이터를 다루는 'Secret'임을 정의
 metadata:
   name: push-license
 type: Opaque # K8s의 기본 타입으로, 구조화되지 않은 임의의 데이터를 저장할 때 사용
-data:
+stringData:
 #  license.key: LS0tLS1CRUdJTi... # base64 encoded license.key file
 #  license.cer: LS0tLS1CRUdJTi... # base64 encoded license.cer file
   license.key: |
